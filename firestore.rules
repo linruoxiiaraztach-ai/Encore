@@ -1,0 +1,71 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── profiles ──────────────────────────────────────────────
+    // Viewable by everyone; only the owner can insert/update.
+    match /profiles/{profileId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid;
+      allow update: if request.auth != null
+                    && resource.data.userId == request.auth.uid;
+      allow delete: if false;
+    }
+
+    // ── items ─────────────────────────────────────────────────
+    // Viewable by everyone; only the seller can insert/update/delete.
+    match /items/{itemId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.sellerId == request.auth.uid;
+      allow update: if request.auth != null
+                    && resource.data.sellerId == request.auth.uid;
+      allow delete: if request.auth != null
+                    && resource.data.sellerId == request.auth.uid;
+    }
+
+    // ── savedItems ────────────────────────────────────────────
+    // Users can only see, add, or remove their own saved items.
+    match /savedItems/{savedItemId} {
+      allow read:   if request.auth != null
+                    && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid;
+      allow delete: if request.auth != null
+                    && resource.data.userId == request.auth.uid;
+      allow update: if false;
+    }
+
+    // ── chats ─────────────────────────────────────────────────
+    // Visible to buyer or seller; only the buyer can create a chat.
+    match /chats/{chatId} {
+      allow read: if request.auth != null
+                  && (resource.data.buyerId == request.auth.uid
+                      || resource.data.sellerId == request.auth.uid);
+      allow create: if request.auth != null
+                    && request.resource.data.buyerId == request.auth.uid;
+      // Allow participants to update the chat (e.g. bumping updatedAt when a message is sent).
+      allow update: if request.auth != null
+                    && (resource.data.buyerId == request.auth.uid
+                        || resource.data.sellerId == request.auth.uid)
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["updatedAt"]);
+      allow delete: if false;
+
+      // ── messages (subcollection of chats) ───────────────────
+      // Only chat participants can read or send messages.
+      match /messages/{messageId} {
+        allow read: if request.auth != null
+                    && (get(/databases/$(database)/documents/chats/$(chatId)).data.buyerId == request.auth.uid
+                        || get(/databases/$(database)/documents/chats/$(chatId)).data.sellerId == request.auth.uid);
+        allow create: if request.auth != null
+                      && request.resource.data.senderId == request.auth.uid
+                      && (get(/databases/$(database)/documents/chats/$(chatId)).data.buyerId == request.auth.uid
+                          || get(/databases/$(database)/documents/chats/$(chatId)).data.sellerId == request.auth.uid);
+        allow update: if false;
+        allow delete: if false;
+      }
+    }
+
+  }
+}

@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/woff/OpenDyslexic-Regular.woff') format('woff');
+  font-weight: normal;
+}
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/woff/OpenDyslexic-Bold.woff') format('woff');
+  font-weight: bold;
+}
+
+@layer base {
+  :root {
+    --background: 36 75% 98%;
+    --foreground: 270 20% 25%;
+    --card: 36 75% 98%;
+    --card-foreground: 270 20% 25%;
+    --popover: 36 75% 98%;
+    --popover-foreground: 270 20% 25%;
+    --primary: 270 20% 56%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 288 40% 84%;
+    --secondary-foreground: 270 20% 25%;
+    --muted: 288 30% 92%;
+    --muted-foreground: 270 10% 45%;
+    --accent: 288 40% 84%;
+    --accent-foreground: 270 20% 25%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 288 30% 85%;
+    --input: 288 30% 85%;
+    --ring: 270 20% 56%;
+    --radius: 0.75rem;
+    --sidebar-background: 36 75% 98%;
+    --sidebar-foreground: 270 20% 25%;
+    --sidebar-primary: 270 20% 56%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 288 40% 84%;
+    --sidebar-accent-foreground: 270 20% 25%;
+    --sidebar-border: 288 30% 85%;
+    --sidebar-ring: 270 20% 56%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Poppins', sans-serif;
+  }
+  .dyslexic-mode body,
+  .dyslexic-mode * {
+    font-family: 'OpenDyslexic', sans-serif !important;
+  }
+}
+
+.clover-frame {
+  position: relative;
+}
+.clover-frame::before,
+.clover-frame::after,
+.clover-frame .corner-tl,
+.clover-frame .corner-tr,
+.clover-frame .corner-bl,
+.clover-frame .corner-br {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  pointer-events: none;
+}
+
+/* Clover SVG corners */
+.clover-corner {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  z-index: 10;
+}
+.clover-corner--tl { top: 8px; left: 8px; }
+.clover-corner--tr { top: 8px; right: 8px; transform: scaleX(-1); }
+.clover-corner--bl { bottom: 8px; left: 8px; transform: scaleY(-1); }
+.clover-corner--br { bottom: 8px; right: 8px; transform: scale(-1, -1); }
